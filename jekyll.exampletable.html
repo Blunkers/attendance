@@ -1,0 +1,60 @@
+{% assign rt_count = 0 | plus: 0 %} <!-- get RT count to display table properly -->
+{% assign rawreport = site.data_attendance_main[0] %} <!-- attendance for main team -->
+{% assign fights = site.data_attendance_main[1] %} <!-- fights info for main team -->
+{% assign report = "" | split: ',' %}
+
+{% for item in rawreport %}
+{% assign report = report | push: item[1] %}
+{% endfor %}
+{% assign sorted = report | sort: 'att' %}
+{% for person in sorted %}
+{% assign rt_count = person.items | size %}
+{% break %}
+{% endfor %}
+<table class="table bg-dark-opacity text-white" data-sortlist="[[1,1]]">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Attendance, %</th>
+            <th colspan="{{ rt_count }}">List of latest RTs. <a href="https://www.warcraftlogs.com/guild/team-calendar/15620" target="_blank">Calendar</a></th> <!-- URL to WarcraftLogs.com calendar -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for person in sorted %}
+        {% assign att = person.att | plus: 0 %}
+        {% if att > 10 %} <!-- do NOT include people with attendance < 10% -->
+        {% if att < 20 %}{% assign att = 20 %}{% endif %} <!-- set attendance = 20 for people with attendance < 20%, just for visual display -->
+        <tr>
+            <td class="quality-{{ att | slice: 0 }}" width="150px">{{ person.name }}</td>
+            <td class="quality-{{ att | slice: 0 }}" width="150px">{{ person.att }}</td>
+            {% for pitem in person.items %}
+            {% assign num = pitem[0] %}
+            {% capture tooltip %}
+            {% for fight in fights[num] %}
+            <b class="text-{% if fight[1].kill %}success{% else %}danger{% endif %}">{{ fight[1].name }}</b> x{{ fight[1].pulls }}
+            {% if forloop.last == false %}<br />{% endif %}
+            {% endfor %}
+            {% endcapture %}
+            <td
+                data-toggle="tooltip" data-html="true"
+                                      class='text-center text-{% if pitem[1] == 1 %}success bg-success{% else %}danger bg-danger{% endif %}'
+                                      style='background-clip: content-box;'
+                                      title='{{ tooltip }}'>
+                {% if pitem[1] == 1 %}Y{% else %}N{% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+.quality-1 {color: #e6cc80 !important;font-weight: bold !important;}
+.quality-9 {color: #ff8000 !important;font-weight: bold !important;}
+.quality-8 {color: #a335ee !important;font-weight: bold !important;}
+.quality-7 {color: #0070dd !important;}
+.quality-6 {color: #1eff00 !important;}
+.quality-5, .quality-4 {color: #ffffff !important;}
+.quality-3, .quality-2 {color: #9d9d9d !important;}
+</style>
