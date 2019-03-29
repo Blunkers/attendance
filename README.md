@@ -15,6 +15,7 @@ attendance:
   guild: 374677 # Guild id from WarcraftLogs.com
   team: 15620 # Team id from WarcraftLogs.com (if you dont use teams, set 0)
   name: main # Team name for output file
+  max: 50 #Maximum included reports
   twinks: # List of twinks to merge, format: "Result name": ['Twink name 1', 'Twink name 2']
     Rakshazi: ['Etke', 'Kaazgul', 'Aresanna']
 ```

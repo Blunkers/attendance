@@ -13,6 +13,7 @@ module Jekyll
                         c.option "guild", "--guild ID", "Warcraft Logs guild id, eg: 374677"
                         c.option "team", "--team ID", "Warcraft Logs team id, eg: 15620 (main), 15829 (static), 0 (all)"
                         c.option "name", "--name NAME", "Report name, eg: main, static, all"
+                        c.option "max", "--max INT", "How many reports should be included"
                         c.action do |args, options|
                             # Options
                             options = getConfig(options)
@@ -23,12 +24,17 @@ module Jekyll
                             Jekyll.logger.info 'Attendance table url: ' + url
                             data = {}
                             fightLinks = []
+                            iReports = 0
                             doc = Nokogiri::HTML(open(url), nil, Encoding::UTF_8.to_s).css("#attendance-table")
                             Jekyll.logger.info 'Found following reports:'
                             doc.css('a').each do |a|
                                 link = a.get_attribute('href').gsub('/reports/','https://www.warcraftlogs.com/reports/fights-and-participants/') + '0'
                                 Jekyll.logger.info link
                                 fightLinks.push(link)
+                                if iReports >= options['max'].to_i
+                                    break
+                                end
+                                iReports+=1
                             end
                             fights = getProgress(fightLinks)
                             person = nil
@@ -69,9 +75,9 @@ module Jekyll
                 def getConfig(options)
                     config = Jekyll.configuration({})
                     options['data_dir'] = File.expand_path(config['data_dir'])
-                    ['guild', 'team', 'name', 'twinks'].each do |key|
+                    ['guild', 'team', 'name', 'max', 'twinks'].each do |key|
                         if (options.key? key) === false
-                            if(['guild', 'team'].include? key) === false #guild and team are integers, so we will call .to_s on them
+                            if(['guild', 'team', 'max'].include? key) === false #guild and team are integers, so we will call .to_s on them
                                 options[key] = config['attendance'][key]
                             else
                                 options[key] = config['attendance'][key].to_s
