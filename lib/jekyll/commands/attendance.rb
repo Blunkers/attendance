@@ -24,7 +24,7 @@ module Jekyll
                             Jekyll.logger.info 'Attendance table url: ' + url
                             data = {}
                             fightLinks = []
-                            iReports = 0
+                            iReports = 1
                             doc = Nokogiri::HTML(open(url), nil, Encoding::UTF_8.to_s).css("#attendance-table")
                             Jekyll.logger.info 'Found following reports:'
                             doc.css('a').each do |a|
@@ -62,6 +62,9 @@ module Jekyll
                                         if data[person]["items"][i] != 1
                                             data[person]["items"][i] = (cell.attr('class') == "present" ? 1 : 0)
                                         end
+                                    end
+                                    if i >= (options['max'].to_i + 2)
+                                        break
                                     end
                                     i+=1
                                 end
