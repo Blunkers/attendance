@@ -4,6 +4,10 @@
 
 [Live Example](https://forestguild.club/attendance) - plugin built specially for this website
 
+# archived.
+
+Use _[WoW Attendance Tool](https://gitlab.com/rakshazi/wat)_ instead - standalone tool with more powerful capabilities  
+
 Example HTML table (grabbed from live example) you can find in file `jekyll.exampletable.html`
 
 ## Configuration
